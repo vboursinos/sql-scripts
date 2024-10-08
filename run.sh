@@ -42,5 +42,27 @@ else
     exit 1
 fi
 
+# Compare new query results with actual query results
+echo "Comparing new query results with actual query results..."
+for file in "$RESULTS_DIR"/*; do
+    # Extract the base filename (without path)
+    base_file=$(basename "$file")
+
+    # Define the corresponding actual result file
+    actual_file="actual_query_results/$base_file"
+
+    # Check if the actual result file exists
+    if [[ -f "$actual_file" ]]; then
+        # Compare the two files
+        if diff -q "$file" "$actual_file" > /dev/null; then
+            echo "$base_file: Results match." | tee -a $LOG_FILE
+        else
+            echo "$base_file: Results do not match!" | tee -a $LOG_FILE
+        fi
+    else
+        echo "$base_file: Actual result file not found!" | tee -a $LOG_FILE
+    fi
+done
+
 # Print total execution time
 echo "Total execution time: $SECONDS seconds" | tee -a $LOG_FILE
