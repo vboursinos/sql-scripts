@@ -1,5 +1,3 @@
-
-Copy
 #!/bin/bash
 
 # Reset the SECONDS variable to track execution time
@@ -21,15 +19,19 @@ export PGPASSWORD=$POSTGRES_PASSWORD
 LOG_FILE="output.log"
 > $LOG_FILE
 
-# Run the SQL files and redirect output to the log file
+# Create a directory for query results
+RESULTS_DIR="query_results"
+mkdir -p $RESULTS_DIR
+
+# Run the SQL files and redirect output to the log file and individual result files
 {
     echo "Running SQL files..."
-    psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -p $POSTGRES_PORT -f select-code1.sql
-    psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -p $POSTGRES_PORT -f select-code2.sql
-    psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -p $POSTGRES_PORT -f select-code4.sql
-    psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -p $POSTGRES_PORT -f select-code5.sql
-    psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -p $POSTGRES_PORT -f select-code7.sql
-    psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -p $POSTGRES_PORT -f select-code8.sql
+    psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -p $POSTGRES_PORT -f select-code1.sql > "$RESULTS_DIR/select-code1-result.log" 2>&1
+    psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -p $POSTGRES_PORT -f select-code2.sql > "$RESULTS_DIR/select-code2-result.log" 2>&1
+    psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -p $POSTGRES_PORT -f select-code4.sql > "$RESULTS_DIR/select-code4-result.log" 2>&1
+    psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -p $POSTGRES_PORT -f select-code5.sql > "$RESULTS_DIR/select-code5-result.log" 2>&1
+    psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -p $POSTGRES_PORT -f select-code7.sql > "$RESULTS_DIR/select-code7-result.log" 2>&1
+    psql -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -p $POSTGRES_PORT -f select-code8.sql > "$RESULTS_DIR/select-code8-result.log" 2>&1
 } 2>&1 | tee -a $LOG_FILE
 
 # Check if the SQL files executed successfully
