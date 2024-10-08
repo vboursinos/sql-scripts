@@ -44,6 +44,8 @@ fi
 
 # Compare new query results with actual query results
 echo "Comparing new query results with actual query results..."
+mismatch_found=false
+
 for file in "$RESULTS_DIR"/*; do
     # Extract the base filename (without path)
     base_file=$(basename "$file")
@@ -58,11 +60,23 @@ for file in "$RESULTS_DIR"/*; do
             echo "$base_file: Results match." | tee -a $LOG_FILE
         else
             echo "$base_file: Results do not match!" | tee -a $LOG_FILE
+            mismatch_found=true
         fi
     else
         echo "$base_file: Actual result file not found!" | tee -a $LOG_FILE
+        mismatch_found=true
     fi
 done
 
+# Exit with an error if any mismatches were found
+if $mismatch_found; then
+    echo "One or more results did not match. Exiting with error." | tee -a $LOG_FILE
+    exit 1
+fi
+
 # Print total execution time
 echo "Total execution time: $SECONDS seconds" | tee -a $LOG_FILE
+
+# Delete the results directory if no mismatches were found
+echo "Cleaning up: Deleting the results directory."
+rm -rf "$RESULTS_DIR"
